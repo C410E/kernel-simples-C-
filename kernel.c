@@ -1,12 +1,15 @@
 #define WHITE_TXT 0x07
 
 void k_clear_screen();
-unsigned int k_print(char *message, unsigned int line);
+unsigned int k_printf(char *message, unsigned int line);
+void K_calc_print();
 
 void k_main()
 {
     k_clear_screen();
-    k_print("Helloworld kernel", 0);
+    k_printf("Helloworld kernel", 0);
+
+    K_calc_print(10, 5, 2);
 }
 
 void k_clear_screen()
@@ -22,7 +25,7 @@ void k_clear_screen()
     }
 }
 
-unsigned int k_print(char *message, unsigned int line)
+unsigned int k_printf(char *message, unsigned int line)
 {
     char *vidmen = (char *) 0xb8000;
     unsigned int i = 0;
@@ -43,15 +46,61 @@ unsigned int k_print(char *message, unsigned int line)
             vidmen[i] = WHITE_TXT;
             i++;
         }
-        return(1);
+        
     }
-    
+    return(1);
 }
 
-//ld: aviso: não foi possível localizar símbolo de entrada _start; usando o padrão 0000000000100000
-//ld: kernel.o: na função "k_main":
-//kernel.c:(.text+0xe): referência não definida para "_GLOBAL_OFFSET_TABLE_"
-//ld: kernel.o: na função "k_clear_screen":
-//kernel.c:(.text+0x3d): referência não definida para "_GLOBAL_OFFSET_TABLE_"
-//ld: kernel.o: na função "k_print":
-//kernel.c:(.text+0x88): referência não definida para "_GLOBAL_OFFSET_TABLE_"
+void int_to_str(int num, char *str)
+{
+    int i = 0, j, temp;
+    int is_negative = 0;
+
+    if (num == 0) 
+    {
+        str[i++] = '0';
+        str[i] = '\0';
+        return;
+    }
+
+    if (num < 0)
+    {
+        is_negative = 1;
+        num = -num;
+    }
+
+    while (num != 0)
+    {
+        str[i++] = (num % 10) + '0';
+        num = num / 10;
+    }
+
+    if (is_negative)
+    {
+        str[i++] = '-';
+    }
+
+    str[i] = '\0';
+
+    for (j = 0; j < i / 2; j++)
+    {
+        temp = str[j];
+        str[j] = str[i - j - 1];
+        str[i - j - 1] = temp;
+    }
+}
+
+void K_calc_print(int a, int b, unsigned int line)
+{
+    char result_str[20];
+
+    int sum = a + b;
+    k_printf("Sum: ", line);
+    int_to_str(sum, result_str);
+    k_printf(result_str, line + 1);
+
+    int diff = a - b;
+    k_printf("Subtracao: ", line + 2);
+    int_to_str(diff, result_str);
+    k_printf(result_str, line + 3);
+}
