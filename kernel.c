@@ -2,14 +2,14 @@
 
 void k_clear_screen();
 unsigned int k_printf(char *message, unsigned int line);
-void K_calc_print();
+void K_calc_print(int a, int b, unsigned int line);
 
 void k_main()
 {
     k_clear_screen();
     k_printf("Helloworld kernel", 0);
 
-    K_calc_print(10, 5, 2);
+    K_calc_print(5, 5, 2);
 }
 
 void k_clear_screen()
